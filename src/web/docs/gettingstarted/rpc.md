@@ -119,9 +119,7 @@ export default function Example() {
         // All RPC calls are async on the client
         const version = await getPackageVersion();
 
-        const diagnostics = await getServerDiagnostics({
-            message: "Hello from the client"
-        });
+        const diagnostics = await getServerDiagnostics("Hello from the client");
 
         console.log({ version, diagnostics });
     }
