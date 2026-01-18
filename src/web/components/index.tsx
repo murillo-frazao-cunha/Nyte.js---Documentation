@@ -38,6 +38,7 @@ import gettingStartAuthMd from '../docs/auth/getting-started.md';
 import installationAuthMd from '../docs/auth/installation.md';
 import providersAuthMd from '../docs/auth/providers.md';
 import sessionsAuthMd from '../docs/auth/session.md';
+import protectingRoutesAuthMd from '../docs/auth/protecting-routes.md';
 import customProvidersAuthMd from '../docs/auth/custom-providers.md';
 
 import introductionMd from '../docs/gettingstarted/getting-started.md';
@@ -67,11 +68,12 @@ const sidebarConfig = {
             id: 'nyte-auth',
             title: "Nyte Auth",
             items: [
-                { id: 'introduction-auth', icon: 'Shield', label: 'Security Overview', file: gettingStartAuthMd },
+                { id: 'introduction-auth', icon: 'Shield', label: 'Overview', file: gettingStartAuthMd },
                 { id: 'installation-auth', icon: 'Download', label: 'Setup Auth', file: installationAuthMd },
                 { id: "providers", icon: "Zap", label: "Providers", file: providersAuthMd },
                 { id: "sessions", icon: "FileCode", label: "Sessions", file: sessionsAuthMd},
-                { id: 'custom-providers', icon: 'Code', label: 'Custom Logic', file: customProvidersAuthMd },
+                { id: 'protecting-routes', icon: 'Lock', label: 'Protecting Routes', file: protectingRoutesAuthMd },
+                { id: 'custom-providers', icon: 'Code', label: 'Custom Providers', file: customProvidersAuthMd },
             ]
         }
     ]

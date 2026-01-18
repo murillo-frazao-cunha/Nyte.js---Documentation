@@ -39,23 +39,23 @@ A basic understanding of how JWT tokens and OAuth work will help you better cust
 ## Next Steps
 
 <div class="next-steps">
-  <a href="/auth/installation" class="step">
+  <a href="/nyte-auth/installation-auth" class="step">
     <h3>Installation</h3>
     <p>Learn how to install and configure @nytejs/auth in your project.</p>
   </a>
-  <a href="/auth/providers" class="step">
+  <a href="/nyte-auth/providers" class="step">
     <h3>Authentication Providers</h3>
     <p>Explore the different authentication providers available and how to configure them.</p>
   </a>
-  <a href="/auth/session" class="step">
+  <a href="/nyte-auth/sessions" class="step">
     <h3>Session Management</h3>
     <p>Understand how to manage user sessions and access user data in your components.</p>
   </a>
-  <a href="/auth/protecting-routes" class="step">
+  <a href="/nyte-auth/protecting-routes" class="step">
     <h3>Protecting Routes</h3>
     <p>Learn how to protect both frontend and backend routes using authentication.</p>
   </a>
-  <a href="/auth/custom-providers" class="step">
+  <a href="/nyte-auth/custom-providers" class="step">
     <h3>Custom Providers</h3>
     <p>Create your own authentication providers for unique authentication needs.</p>
   </a>
