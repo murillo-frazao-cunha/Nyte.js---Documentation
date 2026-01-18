@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+:root {
+    --cyan-glow: rgba(34, 211, 238, 0.15);
+}
+
+body {
+    @apply bg-[#030712] text-slate-300 antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(34, 211, 238, 0.4);
+}
+
+/* Markdown Content Overhaul */
+.markdown-content {
+    @apply leading-relaxed;
+}
+
+.markdown-content h1 {
+    @apply text-5xl font-black text-white tracking-tight mb-8;
+}
+
+.markdown-content h2 {
+    @apply text-3xl font-bold text-white mt-16 mb-6 tracking-tight;
+}
+
+.markdown-content h3 {
+    @apply text-xl font-semibold text-white mt-10 mb-4;
+}
+
+.markdown-content p {
+    @apply text-lg text-slate-400 mb-6;
+}
+
+/* Code Blocks Glass Style */
+.code-block {
+    @apply bg-white/[0.02] backdrop-blur-xl ring-1 ring-white/[0.05] shadow-2xl overflow-hidden rounded-2xl;
+}
+
+.code-header {
+    @apply select-none;
+}
+
+/* Prism Cyan Theme Overrides */
+.token.comment { color: #4b5563; }
+.token.string { color: #22d3ee; }
+.token.keyword { color: #38bdf8; font-style: italic; }
+.token.function { color: #06b6d4; font-weight: 500; }
+.token.operator { color: #94a3b8; }
+.token.number { color: #f472b6; }
+.token.punctuation { color: #475569; }
+
+/* Inline Code */
+.markdown-content code:not([class*="language-"]) {
+    @apply bg-cyan-500/10 text-cyan-400 px-1.5 py-0.5 rounded-md text-[0.9em] font-mono ring-1 ring-cyan-500/20;
+}
+
+/* Blockquotes */
+.markdown-content blockquote {
+    @apply border-l-4 border-cyan-500 bg-cyan-500/5 px-8 py-4 rounded-r-2xl italic text-slate-300 my-10;
+}
+
+/* Table Glass Design */
+.markdown-content table {
+    @apply w-full border-collapse my-8 bg-white/[0.02] rounded-2xl overflow-hidden ring-1 ring-white/5;
+}
+
+.markdown-content th {
+    @apply bg-white/[0.05] text-white text-sm font-bold p-4 text-left border-b border-white/5;
+}
+
+.markdown-content td {
+    @apply p-4 text-sm border-b border-white/[0.02] text-slate-400;
+}
+
+.markdown-content tr:last-child td {
+    @apply border-none;
+}
+
+/* Link Glow */
+.markdown-content a:not(.heading-anchor) {
+    @apply text-cyan-400 no-underline border-b border-cyan-500/30 transition-all hover:border-cyan-400 hover:text-cyan-300;
+}
+/* Lists Style */
+.markdown-content ul {
+    list-style-type: disc;
+    @apply mb-6 ml-6 space-y-2;
+}
+
+.markdown-content ol {
+    list-style-type: decimal;
+    @apply mb-6 ml-6 space-y-2;
+}
+
+.markdown-content li {
+    @apply text-lg text-slate-400 pl-2;
+}
+
+/* Customização da cor das bolinhas e números */
+.markdown-content li::marker {
+    @apply text-cyan-500 font-bold;
+}
+
+/* Ajuste para listas aninhadas (uma dentro da outra) */
+.markdown-content ul ul,
+.markdown-content ol ol,
+.markdown-content ul ol,
+.markdown-content ol ul {
+    @apply mt-2 mb-0 ml-6;
+}
+
+/* Container principal (o grid) */
+.next-steps {
+    text-decoration: none;
+    display: grid;
+    /* Cria 2 colunas de tamanho igual */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px; /* Espaço entre os cards */
+    margin-top: 24px;
+}
+
+/* Estilo individual do card (o link <a>) */
+.step {
+    display: block; /* Faz o link ocupar o espaço como um bloco */
+    padding: 24px;
+    background-color: #111111; /* Fundo do card (um pouco mais claro que o preto) */
+    border: 1px solid #2a2a2a; /* Borda sutil */
+    border-radius: 8px; /* Cantos arredondados */
+    /* definir mais importante sem text-decoration*/
+    text-decoration: none !important; /* Remove o sublinhado do link */
+    transition: border-color 0.2s ease; /* Efeito suave na borda */
+}
+
+/* Efeito ao passar o mouse */
+.step:hover {
+    border-color: #4a4a4a; /* Borda fica mais clara ao passar o mouse */
+}
+
+/* Estilo do título dentro do card */
+.step h3 {
+    color: #ffffff; /* Texto do título branco */
+    font-size: 1.1rem; /* Tamanho da fonte (ajuste conforme precisar) */
+    font-weight: 600;
+    margin: 0 0 8px 0; /* Remove margem de cima/lados, adiciona embaixo */
+}
+
+/* Estilo do parágrafo dentro do card */
+.step p {
+    color: #a0a0a0; /* Texto do parágrafo cinza claro */
+    font-size: 0.9rem;
+    margin: 0; /* Remove qualquer margem padrão */
+    line-height: 1.5; /* Espaçamento entre linhas para leitura */
+}
+
+/* --- Responsividade (Opcional, mas recomendado) --- */
+/* Faz os cards ficarem em 1 coluna em telas pequenas (mobile) */
+@media (max-width: 768px) {
+    .next-steps {
+        grid-template-columns: 1fr; /* Uma coluna só */
+    }
+}

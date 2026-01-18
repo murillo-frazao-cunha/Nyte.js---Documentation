@@ -1,0 +1,39 @@
+{
+  "name": "nytejs-docs",
+  "version": "1.1.0",
+  "description": "Basic example application for Nyte.js framework",
+  "private": true,
+  "author": "itsmuzin",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.20.0",
+  "keywords": [
+    "hightjs",
+    "example",
+    "react"
+  ],
+  "scripts": {
+    "start": "nyte start",
+    "dev": "nyte dev"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/prismjs": "^1.26.5",
+    "@vitejs/plugin-react": "^5.1.2",
+    "autoprefixer": "^10.4.21",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.552.0",
+    "marked": "^16.4.1",
+    "nyte": "^1.1.1",
+    "postcss": "^8.5.6",
+    "prismjs": "^1.30.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "tailwindcss": "^4.1.16",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "typescript": "^5.9.3"
+  }
+}
