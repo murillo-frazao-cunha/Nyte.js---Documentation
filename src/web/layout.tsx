@@ -11,6 +11,8 @@ interface LayoutProps {
 export const metadata: Metadata = {
     title: "Nyte.js | The Fastest Framework for React",
     description: "The fastest and simplest web framework for React! Start building high-performance web applications today with Nyte.js.",
+    favicon: '/nyte-icon.png'
+
 };
 
 export default function Layout({ children }: LayoutProps) {
