@@ -1,6 +1,6 @@
 # Installation
 
-Add authentication to your Hight JS application.
+Add authentication to your Nyte.js application.
 
 ---
 
@@ -9,7 +9,7 @@ Add authentication to your Hight JS application.
 ### 1. Install the Package
 
 ```bash
-npm install @hightjs/auth
+npm install @nytejs/auth
 ```
 
 ### 2. Configure Authentication
@@ -17,7 +17,7 @@ npm install @hightjs/auth
 Create `src/backend/auth.ts`:
 
 ```typescript
-import { CredentialsProvider, createAuthRoutes, User, AuthConfig } from '@hightjs/auth';
+import { CredentialsProvider, createAuthRoutes, User, AuthConfig } from '@nytejs/auth';
 
 export const authConfig: AuthConfig = {
     providers: [
@@ -54,7 +54,9 @@ export const authConfig: AuthConfig = {
 
 export const authRoutes = createAuthRoutes(authConfig);
 ```
+
 ### 3. Export Auth Routes to Backend
+
 Create `src/backend/routes/auth.ts`:
 
 ```typescript
@@ -67,7 +69,7 @@ export default authRoutes;
 Update your `src/web/layout.tsx`:
 
 ```typescript
-import { SessionProvider } from "@hightjs/auth/react";
+import { SessionProvider } from "@nytejs/auth/react";
 
 export default function Layout({ children }: LayoutProps) {
     return (

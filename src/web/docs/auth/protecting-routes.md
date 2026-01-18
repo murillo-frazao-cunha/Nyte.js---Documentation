@@ -1,6 +1,6 @@
 # Protecting Routes
 
-Learn how to restrict access to certain pages and API endpoints in your Hight JS application, ensuring only authenticated users (or only guests) can access them.
+Learn how to restrict access to certain pages and API endpoints in your Nyte.js application, ensuring only authenticated users (or only guests) can access them.
 
 ---
 
@@ -12,17 +12,17 @@ To protect backend routes, simply check the session status using `getSession` fr
 
 ```typescript
 import auth from "../auth";
-import { BackendRouteConfig, HightJSResponse } from "hightjs";
+import { BackendRouteConfig, NyteResponse } from "nyte";
 
 const route: BackendRouteConfig = {
   pattern: "/api/protected",
   GET: async (req, params) => {
     const session = await auth.auth.getSession(req);
     if (!session) {
-      return HightJSResponse.json({ error: "Unauthorized" }, 401);
+      return NyteResponse.json({ error: "Unauthorized" }, 401);
     }
     // User is authenticated
-    return HightJSResponse.json({ message: "Welcome, " + session.user.name });
+    return NyteResponse.json({ message: "Welcome, " + session.user.name });
   }
 };
 
@@ -36,7 +36,7 @@ export default route;
 
 ## Frontend: Protecting Pages and Components
 
-Hight JS Auth provides flexible ways to protect frontend routes and components using hooks and helpers.
+Nyte.js Auth provides flexible ways to protect frontend routes and components using hooks and helpers.
 
 ### Types
 - **GuestOnly**: Renders children only for unauthenticated users.
@@ -63,8 +63,8 @@ export function GuestOnly({ children, fallback, redirectTo }: GuardProps)
 
 ```typescript jsx
 import LoginPage from "../components/Login";
-import { RouteConfig } from "hightjs/client";
-import { GuestOnly } from "hightjs/auth/react";
+import { RouteConfig } from "nyte/react";
+import { GuestOnly } from "@nytejs/auth/react";
 import React from "react";
 
 const wrapper = () => {
@@ -79,7 +79,7 @@ export const config: RouteConfig = {
   pattern: '/login',
   component: wrapper,
   generateMetadata: () => ({
-    title: 'HightJS | Login'
+    title: 'Nyte.js | Login'
   })
 };
 
@@ -107,7 +107,7 @@ export function AuthGuard({ children, fallback, redirectTo }: GuardProps)
 #### Example:
 
 ```typescript jsx
-import { AuthGuard } from "hightjs/auth/react";
+import { AuthGuard } from "@nytejs/auth/react";
 
 <AuthGuard fallback={<div>Please log in.</div>} redirectTo="/login">
   <ProtectedComponent />
@@ -122,7 +122,7 @@ import { AuthGuard } from "hightjs/auth/react";
 **Example:**
 
 ```typescript jsx
-import { AuthGuard } from "hightjs/auth/react";
+import { AuthGuard } from "@nytejs/auth/react";
 
 export default function DashboardPage() {
   return (
@@ -143,4 +143,4 @@ export default function DashboardPage() {
 
 - **Backend:** Use `getSession` to check authentication before serving protected data.
 - **Frontend:** Use `<GuestOnly>` to restrict access to guests, or `<AuthGuard>` to restrict access to authenticated users.
-- These patterns help you build secure, user-friendly applications with Hight JS Auth.
+- These patterns help you build secure, user-friendly applications with Nyte.js Auth.

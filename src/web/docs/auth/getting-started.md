@@ -1,16 +1,16 @@
 # Getting Started
 
-Welcome to the **@hightjs/auth** documentation!
+Welcome to the **@nytejs/auth** documentation!
 
-This section gives you an overview of how authentication works in Hight JS and what makes it powerful and flexible. Here, you'll understand the foundation of the authentication system before diving into implementation details.
+This section gives you an overview of how authentication works in Nyte.js and what makes it powerful and flexible. Here, you'll understand the foundation of the authentication system before diving into implementation details.
 
 ---
 
 ## Overview
 
-**@hightjs/auth** is a complete authentication solution built for simplicity and extensibility. It lets you add authentication to your Hight JS applications with minimal setup, while providing the flexibility to customize every aspect of the auth flow.
+**@nytejs/auth** is a complete authentication solution built for simplicity and extensibility. It lets you add authentication to your Nyte.js applications with minimal setup, while providing the flexibility to customize every aspect of the auth flow.
 
-@hightjs/auth focuses on:
+@nytejs/auth focuses on:
 
 * Multiple authentication providers out of the box
 * Secure session management
@@ -18,7 +18,7 @@ This section gives you an overview of how authentication works in Hight JS and w
 * Built-in React hooks and components
 * Automatic CSRF protection
 
-Whether you need simple email/password authentication or complex OAuth flows, @hightjs/auth gives you the tools to implement authentication securely and efficiently.
+Whether you need simple email/password authentication or complex OAuth flows, @nytejs/auth gives you the tools to implement authentication securely and efficiently.
 
 ---
 
@@ -26,7 +26,7 @@ Whether you need simple email/password authentication or complex OAuth flows, @h
 
 Before implementing authentication, you should be comfortable with:
 
-* **Hight JS** basics and project structure
+* **Nyte.js** basics and project structure
 * **React** hooks and components
 * **TypeScript** for type safety
 * **Async/await** patterns
@@ -41,7 +41,7 @@ A basic understanding of how JWT tokens and OAuth work will help you better cust
 <div class="next-steps">
   <a href="/auth/installation" class="step">
     <h3>Installation</h3>
-    <p>Learn how to install and configure @hightjs/auth in your project.</p>
+    <p>Learn how to install and configure @nytejs/auth in your project.</p>
   </a>
   <a href="/auth/providers" class="step">
     <h3>Authentication Providers</h3>

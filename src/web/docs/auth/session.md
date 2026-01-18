@@ -1,6 +1,6 @@
 # Session Management
 
-Learn how to access, manage, and use authentication sessions in your Hight JS application—both on the frontend (React) and backend (API routes).
+Learn how to access, manage, and use authentication sessions in your Nyte.js application—both on the frontend (React) and backend (API routes).
 
 ---
 
@@ -12,7 +12,7 @@ Session management is at the core of authentication. It allows you to:
 - Access user information in your components and API routes
 - Log users in and out securely
 
-Hight JS Auth provides simple hooks and helpers for both frontend and backend session handling.
+Nyte.js Auth provides simple hooks and helpers for both frontend and backend session handling.
 
 ---
 
@@ -20,11 +20,11 @@ Hight JS Auth provides simple hooks and helpers for both frontend and backend se
 
 ### Accessing Session Data
 
-Use the `useSession` hook from `@hightjs/auth/react` to access the current session and authentication status in your React components:
+Use the `useSession` hook from `@nytejs/auth/react` to access the current session and authentication status in your React components:
 
 ```typescript jsx
 import React from "react";
-import { useSession } from "@hightjs/auth/react";
+import { useSession } from "@nytejs/auth/react";
 
 export default function Profile() {
   const { data: session, status, signOut } = useSession();
@@ -53,8 +53,8 @@ To log in with username and password, use the `signIn` function from `useSession
 
 ```typescript jsx
 import React, { useState } from "react";
-import { useSession } from "@hightjs/auth/react";
-import { useRouter } from "next/router"; // or your router
+import { useSession } from "@nytejs/auth/react";
+import { router } from "nyte/react"; // or your router
 
 export default function LoginPage() {
   const { signIn } = useSession();
@@ -62,7 +62,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +114,7 @@ export default function LoginPage() {
 To log in with an OAuth provider (like Google or Discord), call `signIn` with the provider name:
 
 ```typescript jsx
-import { useSession } from "@hightjs/auth/react";
+import { useSession } from "@nytejs/auth/react";
 const { signIn } = useSession();
 
 const handleOAuthLogin = async () => {
@@ -132,7 +131,7 @@ Replace `"google"` with your configured provider ID.
 To log out, simply call the `signOut` function from `useSession`:
 
 ```typescript jsx
-import { useSession } from "@hightjs/auth/react";
+import { useSession } from "@nytejs/auth/react";
 const { signOut } = useSession();
 
 <button onClick={() => signOut()}>Sign Out</button>
@@ -148,19 +147,19 @@ You can access the current session in your backend routes using the `getSession`
 
 ```typescript
 import auth from "../auth"; // Import your src/backend/auth.ts
-import { BackendRouteConfig, HightJSResponse } from "hightjs";
+import { BackendRouteConfig, NyteResponse } from "nyte";
 
 const route: BackendRouteConfig = {
   pattern: "/api/version",
-  GET: async (request, params): Promise<HightJSResponse> => {
+  GET: async (request, params): Promise<NyteResponse> => {
     const session = await auth.auth.getSession(request);
     if (session != null) {
       console.log(`User ID: ${session.user.id}`);
     }
-    return HightJSResponse.json({
+    return NyteResponse.json({
       success: true,
       version: "1.0.0",
-      name: "HightJS Example"
+      name: "Nyte.js Example"
     });
   }
 };
