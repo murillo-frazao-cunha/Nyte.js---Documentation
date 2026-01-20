@@ -38,27 +38,27 @@ A basic understanding of React will help you quickly understand the concepts and
 ## Next Steps
 
 <div class="next-steps">
-  <a href="/nyte/installation" class="step">
+  <a href="/docs/nyte/installation" class="step">
     <h3>Installation</h3>
     <p>See how to start a new project and configure your development environment.</p>
   </a>
-  <a href="/nyte/project-structure" class="step">
+  <a href="/docs/nyte/project-structure" class="step">
     <h3>Project Structure</h3>
     <p>Understand the folder and file conventions used in applications.</p>
   </a>
-  <a href="/nyte/layouts" class="step">
+  <a href="/docs/nyte/layouts" class="step">
     <h3>Layout</h3>
     <p>Learn how layout is used.</p>
   </a>
-  <a href="/nyte/routing" class="step">
+  <a href="/docs/nyte/routing" class="step">
     <h3>Routing</h3>
     <p>Explore the built-in navigation system and how it optimizes route transitions.</p>
   </a>
-<a href="/nyte/rpc" class="step">
+<a href="/docs/nyte/rpc" class="step">
     <h3>RPC System</h3>
     <p>RPC system that lets your frontend call backend functions directly.</p>
   </a>
-  <a href="/nyte/middlewares" class="step">
+  <a href="/docs/nyte/middlewares" class="step">
     <h3>Middleware</h3>
     <p>Discover middleware: functions that run before routes for authentication, logging, and request transformation.</p>
   </a>
