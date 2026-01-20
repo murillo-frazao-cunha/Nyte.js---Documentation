@@ -1,380 +1,440 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-    Search,
-    Home,
-    Download,
-    FileText,
-    Code,
-    GitBranch,
-    Wrench,
-    BookOpen,
-    Settings,
-    Palette,
-    Globe,
     Zap,
+    Shield,
+    Globe,
     Box,
-    FileCode,
-    Book,
-    ChevronLeft,
-    ChevronRight,
-    GithubIcon,
-    Command
+    Wrench,
+    Github,
+    Search,
+    X,
+    Cpu,
+    Layout,
+    ArrowRight,
+    Terminal, Palette, Wifi
 } from 'lucide-react';
-import { marked } from 'marked';
-import Prism from 'prismjs';
+import { Link } from "nyte/react"
+import { sidebarConfig } from './docs';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useParallax } from '../hooks/useParallax';
+import SearchModal from './SearchModal';
+import type { SearchDoc } from '../lib/searchIndex';
 
-// Importar linguagens Prism
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-jsx';
-import 'prismjs/components/prism-tsx';
-import 'prismjs/components/prism-css';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-markdown';
+const NyteLanding = () => {
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-// Docs (Mantendo suas importações originais)
-import gettingStartAuthMd from '../docs/auth/getting-started.md';
-import installationAuthMd from '../docs/auth/installation.md';
-import providersAuthMd from '../docs/auth/providers.md';
-import sessionsAuthMd from '../docs/auth/session.md';
-import protectingRoutesAuthMd from '../docs/auth/protecting-routes.md';
-import customProvidersAuthMd from '../docs/auth/custom-providers.md';
+    const reducedMotion = usePrefersReducedMotion();
 
-import introductionMd from '../docs/gettingstarted/getting-started.md';
-import installationMd from '../docs/gettingstarted/installation.md';
-import projectStructureMd from '../docs/gettingstarted/project-structure.md';
-import routingMd from '../docs/gettingstarted/routing.md';
-import layoutMd from '../docs/gettingstarted/layout.md';
-import rpcMd from '../docs/gettingstarted/rpc.md';
-import middlewaresMd from '../docs/gettingstarted/middleware.md';
-const sidebarConfig = {
-    sections: [
-        {
-            id: 'nyte',
-            title: "Nyte.js",
-            items: [
-                { id: "introduction", icon: "Home", label: "Introduction", file: introductionMd },
-                { id: "installation", icon: "Download", label: "Installation", file: installationMd },
-                { id: "project-structure", icon: "Box", label: "Project Structure", file: projectStructureMd },
-                { id: "layout", icon: "Palette", label: "Layout System", file: layoutMd },
-                { id: "routing", icon: "GitBranch", label: "Routing", file: routingMd },
-                { id: "rpc", icon: "Globe", label: "RPC System", file: rpcMd },
-                { id: "middlewares", icon: "Wrench", label: "Middlewares", file: middlewaresMd },
-
-            ]
-        },
-        {
-            id: 'nyte-auth',
-            title: "Nyte Auth",
-            items: [
-                { id: 'introduction-auth', icon: 'Shield', label: 'Overview', file: gettingStartAuthMd },
-                { id: 'installation-auth', icon: 'Download', label: 'Setup Auth', file: installationAuthMd },
-                { id: "providers", icon: "Zap", label: "Providers", file: providersAuthMd },
-                { id: "sessions", icon: "FileCode", label: "Sessions", file: sessionsAuthMd},
-                { id: 'protecting-routes', icon: 'Lock', label: 'Protecting Routes', file: protectingRoutesAuthMd },
-                { id: 'custom-providers', icon: 'Code', label: 'Custom Providers', file: customProvidersAuthMd },
-            ]
-        }
-    ]
-};
-
-const iconMap: { [key: string]: any } = {
-    Home, Download, FileText, Code, GitBranch, Wrench, BookOpen, Settings, Palette, Globe, Zap, Box, FileCode, Book
-};
-
-const generateId = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
-const renderer = new marked.Renderer();
-renderer.heading = ({ text, depth }: any) => {
-    const id = generateId(text);
-    return `<h${depth} id="${id}" class="group flex items-center gap-2">
-                ${text}
-                <a href="#${id}" class="opacity-0 group-hover:opacity-100 text-cyan-500 transition-opacity">#</a>
-            </h${depth}>`;
-};
-
-renderer.code = ({ text, lang }: any) => {
-    const validLanguage = lang && Prism.languages[lang] ? lang : 'plaintext';
-    const highlighted = Prism.highlight(text, Prism.languages[validLanguage], validLanguage);
-    return `
-        <div class="code-block my-8 group relative">
-            <div class="code-header flex justify-between items-center px-4 py-2 bg-white/5 rounded-t-xl border-b border-white/5">
-                <span class="text-[10px] uppercase tracking-widest text-cyan-500/70 font-bold">${lang || 'code'}</span>
-                <button class="copy-button p-1 hover:text-cyan-400 transition-colors" onclick="navigator.clipboard.writeText(this.getAttribute('data-code'))" data-code="${text.replace(/"/g, '&quot;')}">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                </button>
-            </div>
-            <pre class="language-${validLanguage} !bg-transparent !m-0 !p-6 overflow-x-auto"><code class="language-${validLanguage}">${highlighted}</code></pre>
-        </div>
-    `;
-};
-
-marked.setOptions({ renderer });
-
-export default function NyteDocs({ params }: any) {
-    const pageId = params?.value2 || 'introduction';
-    const [activeSection, setActiveSection] = useState(pageId);
-    const [htmlContent, setHtmlContent] = useState('');
-    const [headings, setHeadings] = useState<any[]>([]);
-    const [searchQuery, setSearchQuery] = useState('');
-
-    // Flatten all pages once
-    const allPages = useMemo(() => sidebarConfig.sections.flatMap(section => section.items), []);
-
-    // Global search results (title + content)
-    const searchResults = useMemo(() => {
-        const q = searchQuery.trim().toLowerCase();
-        if (!q) return [] as Array<{ id: string; label: string; sectionId: string; snippet?: string }>;
-
-        const makeSnippet = (text: string) => {
-            const normalized = text.replace(/\s+/g, ' ');
-            const idx = normalized.toLowerCase().indexOf(q);
-            if (idx === -1) return undefined;
-            const start = Math.max(0, idx - 60);
-            const end = Math.min(normalized.length, idx + q.length + 60);
-            const prefix = start > 0 ? '…' : '';
-            const suffix = end < normalized.length ? '…' : '';
-            return `${prefix}${normalized.slice(start, end)}${suffix}`;
-        };
-
-        const takeTop = (arr: any[], max: number) => arr.slice(0, max);
-
-        const results = allPages
-            .map((page) => {
-                const section = sidebarConfig.sections.find(s => s.items.some(i => i.id === page.id));
-                const sectionId = section?.id ?? 'nyte';
-
-                const labelHit = page.label?.toLowerCase().includes(q);
-                const fileText = typeof page.file === 'string' ? page.file : '';
-                const contentHit = fileText.toLowerCase().includes(q);
-
-                if (!labelHit && !contentHit) return null;
-
-                // Score label matches higher than content matches
-                const score = (labelHit ? 2 : 0) + (contentHit ? 1 : 0);
-
-                return {
-                    id: page.id,
-                    label: page.label,
-                    sectionId,
-                    score,
-                    snippet: contentHit ? makeSnippet(fileText) : undefined
-                };
-            })
-            .filter(Boolean)
-            .sort((a: any, b: any) => b.score - a.score);
-
-        return takeTop(results as any, 8);
-    }, [allPages, searchQuery]);
-
-    // Função para obter página anterior e próxima
-    const getAllPages = () => {
-        return sidebarConfig.sections.flatMap(section => section.items);
-    };
-    const getNavigationPages = (currentId: string) => {
-        const allPages = getAllPages();
-        const currentIndex = allPages.findIndex(page => page.id === currentId);
-
-        return {
-            previous: currentIndex > 0 ? allPages[currentIndex - 1] : null,
-            next: currentIndex < allPages.length - 1 ? allPages[currentIndex + 1] : null
-        };
-    };
+    // Precompute particles for stable positions
+    const particles = useMemo(
+        () =>
+            Array.from({ length: 60 }).map((_, i) => ({
+                id: i,
+                left: Math.random() * 100,
+                top: Math.random() * 100,
+                duration: 3 + Math.random() * 5,
+                delay: i * 0.07,
+                size: Math.random() < 0.12 ? 2 : 1,
+                opacity: 0.15 + Math.random() * 0.45,
+            })),
+        []
+    );
 
     useEffect(() => {
-        const currentItem = sidebarConfig.sections.flatMap(s => s.items).find(i => i.id === activeSection);
-        if (currentItem?.file) {
-            setHtmlContent(marked.parse(currentItem.file) as string);
-            const headingRegex = /^(#{1,3})\s+(.+)$/gm;
-            const matches = [...currentItem.file.matchAll(headingRegex)];
-            setHeadings(matches.map(m => ({ id: generateId(m[2]), text: m[2], level: m[1].length })));
-            setTimeout(() => Prism.highlightAll(), 0);
-        }
-    }, [activeSection]);
+        const handleKeyDown = (e: { metaKey: any; ctrlKey: any; key: string; preventDefault: () => void; }) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsSearchOpen(true);
+            }
+            if (e.key === 'Escape') {
+                setIsSearchOpen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
-    const navigateToPage = (itemId: string) => {
-        // Find which section this item belongs to
-        const section = sidebarConfig.sections.find(s =>
-            s.items.some(item => item.id === itemId)
+    const docsForSearch: SearchDoc[] = useMemo(() => {
+        return sidebarConfig.sections.flatMap((section) =>
+            section.items.map((item) => ({
+                id: item.id,
+                label: item.label,
+                category: section.title,
+                href: `/docs/${section.id}/${item.id}`,
+                content: typeof (item as any).file === 'string' ? (item as any).file : '',
+            }))
         );
+    }, []);
 
-        if (section) {
-            const newUrl = `/${section.id}/${itemId}`;
-            window.history.pushState({}, '', newUrl);
-            setActiveSection(itemId);
-        }
-        setSearchQuery('');
+    const GridBackground = () => {
+        const orbARef = useRef<HTMLDivElement | null>(null);
+        const orbBRef = useRef<HTMLDivElement | null>(null);
+
+        useParallax(orbARef, !reducedMotion, { intensity: 42, axis: 'y', invert: true });
+        useParallax(orbBRef, !reducedMotion, { intensity: 34, axis: 'y', invert: false });
+
+        return (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `
+                    linear-gradient(to right, rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(56, 189, 248, 0.03) 1px, transparent 1px)
+                `,
+                    backgroundSize: '80px 80px',
+                    maskImage: 'radial-gradient(circle at center, black, transparent 80%)'
+                }} />
+
+                <div ref={orbARef} className="absolute top-1/4 left-1/4 w-[680px] h-[680px] bg-gradient-to-r from-cyan-500/7 via-blue-500/5 to-transparent blur-[140px] rounded-full animate-pulse" />
+                <div ref={orbBRef} className="absolute bottom-1/4 right-1/4 w-[560px] h-[560px] bg-gradient-to-l from-purple-500/7 via-pink-500/5 to-transparent blur-[130px] rounded-full animate-pulse delay-1000" />
+
+                <div className="absolute inset-0">
+                    {particles.map((p) => (
+                        <div
+                            key={p.id}
+                            className="absolute bg-cyan-400 rounded-full nyte-particle"
+                            style={{
+                                left: `${p.left}%`,
+                                top: `${p.top}%`,
+                                width: `${p.size}px`,
+                                height: `${p.size}px`,
+                                opacity: p.opacity,
+                                animationDuration: `${p.duration}s`,
+                                animationDelay: `${p.delay}s`,
+                                filter: 'drop-shadow(0 0 10px rgba(34, 211, 238, 0.25))'
+                            }}
+                        />
+                    ))}
+                </div>
+
+                <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent" />
+                <div className="absolute left-1/2 top-0 h-full w-px bg-gradient-to-b from-transparent via-cyan-500/10 to-transparent" />
+            </div>
+        );
     };
 
+    const heroBadge = useScrollReveal({ threshold: 0.3, once: false });
+    const heroTitle = useScrollReveal({ threshold: 0.25, once: false });
+    const heroSubtitle = useScrollReveal({ threshold: 0.2, once: false });
+    const heroButtons = useScrollReveal({ threshold: 0.2, once: false });
+    const heroCmd = useScrollReveal({ threshold: 0.2, once: false });
+    const featHeader = useScrollReveal({ threshold: 0.2, once: false });
+    const featGrid = useScrollReveal({ threshold: 0.15, rootMargin: '0px 0px -5% 0px', once: false });
+    const archHeader = useScrollReveal({ threshold: 0.2, once: false });
+    const archGrid = useScrollReveal({ threshold: 0.15, rootMargin: '0px 0px -5% 0px', once: false });
+    const footerReveal = useScrollReveal({ threshold: 0.2, rootMargin: '0px 0px 0px 0px', once: false });
+
     return (
-        <div className="h-screen overflow-hidden bg-[#030712] text-slate-300 selection:bg-cyan-500/30">
-            {/* Background Orbs */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-cyan-500/10 blur-[120px] rounded-full" />
-                <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full" />
-            </div>
+        /* CORREÇÃO IMPORTANTE 1: Mudei overflow-hidden para overflow-x-hidden.
+           Se deixar overflow-hidden aqui, o scroll vertical "morre" e o sticky para de funcionar. */
+        <div className="min-h-screen bg-[#030712] text-slate-300 selection:bg-cyan-500/30 font-sans selection:text-white relative custom-scrollbar">
+            <GridBackground/>
 
-            <div className="flex relative z-10 h-full min-w-0">
-                {/* Sidebar Glass */}
-                <aside
-                    className="w-80 min-w-80 max-w-80 h-screen sticky top-0 hidden lg:flex flex-col bg-white/[0.02] backdrop-blur-xl border-r border-white/[0.05] flex-none overflow-hidden"
-                    style={{ flex: '0 0 20rem' }}
+            <SearchModal
+                open={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                docs={docsForSearch}
+                placeholder="Search documentation..."
+            />
+
+            {/* CORREÇÃO IMPORTANTE 2: Sticky precisa de top-0 e z-index alto.
+                Agora que o pai não tem overflow-hidden vertical, ele vai grudar. */}
+            <nav className="sticky top-0 z-50 w-full border-b border-white/[0.05] bg-[#030712]/80 backdrop-blur-md supports-[backdrop-filter]:bg-[#030712]/75">
+                <div className="flex h-16 items-center justify-between px-6 max-w-7xl mx-auto">
+                    <div className="flex items-center gap-6">
+                        <div className="relative group cursor-pointer">
+                            <div className="absolute inset-0  opacity-20 group-hover:opacity-40 transition-opacity" />
+                            <img src="https://i.imgur.com/zUTrtM5.png" alt="Nyte" className="relative w-8 h-8 rounded-lg shadow-2xl" />
+                        </div>
+
+                        <Link href="/docs" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                            Docs
+                        </Link>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsSearchOpen(true)}
+                            className="hidden md:flex items-center gap-3 bg-white/[0.05] border border-white/10 rounded-md px-3 py-1.5 text-sm text-slate-400 hover:text-white hover:border-white/20 transition-all w-64 group"
+                        >
+                            <span className="flex-1 text-left">Search documentation...</span>
+                            <div className="flex gap-1">
+                                <kbd className="bg-black/20 border border-white/10 px-1.5 rounded text-[10px] font-mono group-hover:border-white/20 transition-colors">Ctrl</kbd>
+                                <kbd className="bg-black/20 border border-white/10 px-1.5 rounded text-[10px] font-mono group-hover:border-white/20 transition-colors">K</kbd>
+                            </div>
+                        </button>
+
+                        <a
+                            href="https://github.com/murillo-frazao-cunha/nyte"
+                            className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <Github size={20} />
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            {/* CORREÇÃO 3: Removi o mt-16 que tinha colocado antes, pois sticky ocupa espaço real no layout */}
+            <section className="relative z-10 pt-10 pb-20 px-6 text-center mt-10 overflow-hidden">
+                <h1
+                    ref={heroTitle.ref as any}
+                    {...heroTitle.props}
+                    className="nyte-reveal nyte-reveal-up nyte-stagger text-2xl md:text-6xl font-extrabold text-white tracking-tight mb-6 leading-snug md:leading-[1.1]"
+                    style={{ ['--d' as any]: '90ms' }}
                 >
-                    <div className="p-8 flex items-center gap-4">
-                        <div className="relative group">
-                            <div className="absolute inset-0 bg-cyan-500 blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
-                            <img src="https://i.imgur.com/zUTrtM5.png" alt="Nyte" className="w-10 h-10 relative z-10 rounded-lg object-contain" />
-                        </div>
-                        <span className="text-xl font-black text-white tracking-tighter">Nyte<span className="text-cyan-400">.js</span></span>
-                    </div>
+                    The next-generation framework for the web
+                </h1>
 
-                    <nav className="flex-1 px-4 py-2 overflow-y-auto custom-scrollbar">
-                        {sidebarConfig.sections.map((section, idx) => (
-                            <div key={idx} className="mb-8">
-                                <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">
-                                    {section.title}
-                                </h3>
-                                <div className="space-y-1">
-                                    {section.items.map((item) => {
-                                        const Icon = iconMap[item.icon] || FileText;
-                                        const isActive = activeSection === item.id;
-                                        return (
-                                            <button
-                                                key={item.id}
-                                                onClick={() => navigateToPage(item.id)}
-                                                className={`w-full cursor-pointer flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 group ${
-                                                    isActive
-                                                        ? 'bg-cyan-500/10 text-cyan-400 ring-1 ring-cyan-500/20 shadow-[0_0_20px_-5px_rgba(34,211,238,0.2)]'
-                                                        : 'hover:bg-white/[0.03] text-slate-400 hover:text-white'
-                                                }`}
-                                            >
-                                                <Icon size={18} className={isActive ? 'text-cyan-400' : 'group-hover:text-cyan-400 transition-colors'} />
-                                                <span className="text-sm font-medium tracking-wide truncate">{item.label}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        ))}
-                    </nav>
-                </aside>
 
-                {/* Main Content Area (the ONLY scroll container lives inside) */}
-                <main className="flex-1 h-full min-w-0 overflow-hidden">
-                    <div className="flex flex-col h-full min-w-0">
-                        {/* Floating Header */}
-                        <header className="h-20 flex-none sticky top-0 z-50 bg-[#030712]/80 backdrop-blur-md px-8 flex items-center justify-between border-b border-white/[0.05]">
-                            <div className="max-w-2xl w-full relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Search documentation..."
-                                    className="w-full bg-white/[0.03] border-none ring-1 ring-white/10 rounded-full pl-12 pr-12 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500/40 transition-all outline-none shadow-inner"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
+                <p
+                    ref={heroSubtitle.ref as any}
+                    {...heroSubtitle.props}
+                    className="nyte-reveal nyte-reveal-up nyte-stagger max-w-2xl mx-auto text-lg md:text-xl text-slate-400 mb-10 leading-relaxed"
+                    style={{ ['--d' as any]: '160ms' }}
+                >
+                    Built for developers who value speed and type-safety, Nyte.js lets you create
+                    <span className="text-white font-semibold"> high-quality web applications</span> with seamless backend integration and built-in authentication.
+                </p>
 
-                                {/* Search Results Dropdown */}
-                                {searchQuery.trim().length > 0 && (
-                                    <div className="absolute left-0 right-0 mt-3 rounded-2xl overflow-hidden border border-white/10 bg-[#0b1220]/95 backdrop-blur-xl shadow-2xl">
-                                        {searchResults.length === 0 ? (
-                                            <div className="p-4 text-sm text-slate-400">
-                                                No results for <span className="text-white font-semibold">"{searchQuery.trim()}"</span>
-                                            </div>
-                                        ) : (
-                                            <div className="divide-y divide-white/5">
-                                                {searchResults.map((r) => (
-                                                    <button
-                                                        key={`${r.sectionId}:${r.id}`}
-                                                        className="w-full text-left p-4 hover:bg-white/[0.03] transition-colors"
-                                                        onClick={() => navigateToPage(r.id)}
-                                                    >
-                                                        <div className="flex items-center justify-between gap-3">
-                                                            <div className="text-sm font-semibold text-white truncate">{r.label}</div>
-                                                            <div className="text-[10px] uppercase tracking-widest text-slate-500 flex-none">{r.sectionId}</div>
-                                                        </div>
-                                                        {r.snippet ? (
-                                                            <div className="mt-2 text-xs text-slate-400 line-clamp-2">{r.snippet}</div>
-                                                        ) : null}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                <div ref={heroButtons.ref as any} {...heroButtons.props} className="nyte-reveal nyte-reveal-up nyte-stagger flex flex-col md:flex-row items-center justify-center gap-4 mb-8" style={{ ['--d' as any]: '230ms' }}>
+                    <Link href="/docs/nyte/installation" className="nyte-tilt nyte-sheen w-full md:w-auto px-8 py-3.5 bg-white text-black rounded-lg font-bold hover:bg-slate-200 transition-all hover:-translate-y-1 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]">
+                        Get Started
+                    </Link>
+                    <Link href="/docs" className="nyte-tilt nyte-sheen w-full md:w-auto px-8 py-3.5 bg-white/[0.03] text-white border border-white/10 rounded-lg font-bold hover:bg-white/5 transition-all hover:-translate-y-1 backdrop-blur-sm">
+                        Read the Docs
+                    </Link>
+                </div>
 
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1 pointer-events-none">
-                                    <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] text-slate-500"><Command size={10} /></kbd>
-                                    <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] text-slate-500">K</kbd>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-6 text-slate-400">
-                                <a href="https://github.com/murillo-frazao-cunha/nyte" className="hover:text-cyan-400 transition-colors"><GithubIcon size={20} /></a>
-                                <div className="h-4 w-px bg-white/10" />
-                            </div>
-                        </header>
-
-                        {/* Scrollable Content (vertical + horizontal if needed) */}
-                        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-auto custom-scrollbar">
-                            <div className="max-w-[1000px] mx-auto px-8 py-16 min-w-0">
-                                <article className="markdown-content prose prose-invert prose-cyan max-w-none custom-scrollbar">
-                                    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-                                </article>
-
-                                {/* Navigation Footer */}
-                                <footer className="mt-24 pt-12 border-t border-white/[0.05] grid grid-cols-2 gap-8">
-                                    {/* Previous */}
-                                    {getNavigationPages(activeSection).previous ? (
-                                        <button onClick={() => navigateToPage(getNavigationPages(activeSection).previous!.id)} className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-cyan-500/30 transition-all text-left group">
-                                            <span className="text-xs text-slate-500 flex items-center gap-2 mb-2"><ChevronLeft size={14} /> Previous</span>
-                                            <div className="text-white font-bold group-hover:text-cyan-400 transition-colors">{getNavigationPages(activeSection).previous!.label}</div>
-                                        </button>
-                                    ) : (
-                                        <div className="flex-1 max-w-xs"></div>
-                                    )}
-
-                                    {/* Next */}
-                                    {getNavigationPages(activeSection).next ? (
-                                        <button onClick={() => navigateToPage(getNavigationPages(activeSection).next!.id)} className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-cyan-500/30 transition-all text-right group">
-                                            <span className="text-xs text-slate-500 flex items-center justify-end gap-2 mb-2">Next <ChevronRight size={14} /></span>
-                                            <div className="text-white font-bold group-hover:text-cyan-400 transition-colors">{getNavigationPages(activeSection).next!.label}</div>
-                                        </button>
-                                    ) : (
-                                        <div className="flex-1 max-w-xs"></div>
-                                    )}
-                                </footer>
-                            </div>
+                <div className="w-fit mx-auto p-1 rounded-xl bg-gradient-to-b from-white/10 to-white/5 hover:to-blue-500/20 transition-all duration-500 nyte-tilt nyte-sheen">
+                    <div ref={heroCmd.ref as any} {...heroCmd.props} className="nyte-reveal nyte-reveal-fade nyte-stagger relative max-w-md" style={{ ['--d' as any]: '230ms' }}>
+                        <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
+                        <div className="relative flex items-center justify-between gap-3 px-5 py-3 bg-[#0b1221] border border-white/10 rounded-xl text-sm font-mono shadow-2xl nyte-sheen">
+                            <span className="text-slate-500">$</span>
+                            <span className="text-slate-300 flex-1 text-left ml-2">npx @nytejs/create-app@latest</span>
+                            <button className="text-slate-500 hover:text-white transition-colors" title="Copy">
+                                <Box size={14} />
+                            </button>
                         </div>
                     </div>
-                </main>
+                </div>
 
-                {/* Right TOC Glass */}
-                <aside className="w-72 min-w-72 max-w-72 h-screen sticky top-0 hidden xl:block bg-transparent flex-none overflow-hidden custom-scrollbar">
-                    <div className="h-full p-10 overflow-y-auto custom-scrollbar">
-                        <div className="space-y-8 custom-scrollbar">
+            </section>
+
+            <section className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+                <div ref={featHeader.ref as any} {...featHeader.props} className="nyte-reveal nyte-reveal-up mb-16">
+                    <h2 className="text-3xl font-bold text-white mb-4 text-center">What's in Nyte.js?</h2>
+                    <p className="text-slate-400 text-center max-w-2xl mx-auto">Everything you need to build great products on the web, packed into a cohesive framework.</p>
+                </div>
+
+                <div ref={featGrid.ref as any} {...featGrid.props} className="nyte-reveal nyte-reveal-up grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                    <div className="md:col-span-2 group relative p-1 rounded-xl bg-gradient-to-b from-white/10 to-white/5 hover:to-blue-500/20 transition-all duration-500 nyte-tilt nyte-sheen">
+                        <div className="relative h-full bg-[#080c14] rounded-[10px] p-8 overflow-hidden border border-white/5 flex flex-col justify-between">
                             <div>
-                                <h4 className="text-[10px] font-bold text-white uppercase tracking-widest mb-6 border-l-2 border-cyan-500 pl-4">On this page</h4>
-                                <div className="space-y-4">
-                                    {headings.map((h, i) => (
-                                        <a
-                                            key={i}
-                                            href={`#${h.id}`}
-                                            className={`block text-sm transition-colors hover:text-cyan-400 ${h.level > 1 ? 'ml-4 text-slate-500' : 'text-slate-400 font-medium'}`}
-                                        >
-                                            {h.text}
-                                        </a>
-                                    ))}
+                                <div className="flex justify-between items-start mb-6 relative z-10">
+                                    <div className="p-3 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                                        <Globe size={28} />
+                                    </div>
+                                    <div className="text-[10px] font-bold text-cyan-500/80 uppercase tracking-widest border border-cyan-500/20 px-2 py-1 rounded bg-cyan-950/30">Core</div>
                                 </div>
+                                <h3 className="text-2xl font-bold text-white mb-3 relative z-10">Native RPC System</h3>
+                                <p className="text-slate-400 relative z-10 max-w-md mb-8">Direct server-to-client communication. Expose your backend logic specifically to your frontend with zero boilerplate.</p>
                             </div>
 
 
+                            <div className="relative z-10 bg-[#030712] rounded-lg border border-white/10 p-4 font-mono text-xs text-slate-300 shadow-2xl group-hover:border-cyan-500/30 transition-colors">
+                                <div className="flex justify-between text-slate-500 mb-3 pb-2 border-b border-white/5">
+                                    <span>server/actions.ts</span>
+                                    <span className="text-cyan-400">Server Side</span>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <div className="flex gap-2"><span className="text-purple-400">import</span> {'{'} Expose {'}'} <span className="text-purple-400">from</span> <span className="text-green-400">"nyte/rpc"</span></div>
+                                    <div className="h-2"></div>
+                                    <div className="flex gap-2"><span className="text-purple-400">export function</span> <span className="text-blue-400">getUser</span>(id) {'{'}</div>
+                                    <div className="pl-4 text-slate-400"><span className="text-purple-400">return</span> db.users.find(id)</div>
+                                    <div className="flex gap-2">{'}'}</div>
+                                    <div className="h-1"></div>
+                                    <div className="flex "><span className="text-yellow-400">Expose</span>(getUser)</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </aside>
-            </div>
+
+                    <div className="group relative p-1 rounded-xl bg-gradient-to-b from-white/10 to-white/5 hover:to-blue-500/20 transition-all duration-500 nyte-tilt nyte-sheen">
+                        <div className="relative h-full bg-[#080c14] rounded-[10px] p-8 overflow-hidden border border-white/5 transition-all duration-500 flex flex-col">
+                            <div className="p-3 rounded-lg bg-blue-500/10 text-blue-400 w-fit mb-6 border border-blue-500/20">
+                                <Shield size={28} />
+                            </div>
+                            <h3 className="text-2xl font-bold text-white mb-3">Nyte Auth</h3>
+                            <p className="text-slate-400 mb-6">Secure session management built-in. Protect your routes and data effortlessly.</p>
+
+                            <div className="mt-auto relative z-10 bg-[#030712] rounded-lg border border-white/10 p-4 font-mono text-xs text-slate-300 shadow-xl group-hover:border-blue-500/30 transition-colors">
+                                <div className="flex justify-between text-slate-500 mb-2">
+                                    <span>profile.tsx</span>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="flex flex-wrap gap-1 mb-2">
+                                        <span className="text-purple-400">import</span>
+                                        {'{'} <span className="text-yellow-300">useSession</span> {'}'}
+                                        <span className="text-purple-400">from</span>
+                                        <span className="text-green-400">"@nytejs/auth"</span>
+                                    </div>
+                                    <div className="flex gap-2"><span className="text-purple-400">const</span> {'{'} user {'}'} = <span className="text-blue-400">useSession</span>()</div>
+                                    <div className="text-slate-500 mt-1">// Auto-protected context</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {[
+                        {
+                            icon: Layout,
+                            title: "Pattern Routing",
+                            desc: "Flexible route matching with regex support. Not just file-system based.",
+                            color: "text-purple-400",
+                            bg: "bg-purple-500/10",
+                            border: "hover:border-purple-500/30"
+                        },
+                        {
+                            icon: Zap,
+                            title: "Powered by Vite",
+                            desc: "Lightning fast HMR and heavily optimized production builds.",
+                            color: "text-yellow-400",
+                            bg: "bg-yellow-500/10",
+                            border: "hover:border-yellow-500/30"
+                        },
+                        {
+                            icon: Wifi,
+                            title: "Native WebSockets",
+                            desc: "Real-time ready. Upgrade any route to a persistent connection.",
+                            color: "text-emerald-400",
+                            bg: "bg-emerald-500/10",
+                            border: "hover:border-emerald-500/30"
+                        }
+                    ].map((item, idx) => (
+                        <div key={idx} className={`group relative p-1 rounded-xl bg-gradient-to-b from-white/10 to-white/5 hover:to-white/10 transition-all duration-500 nyte-tilt nyte-sheen ${item.border}`} style={{ transitionDelay: `${idx * 50}ms` }}>
+                            <div className="relative h-full bg-[#080c14] rounded-[10px] p-6 overflow-hidden border border-white/5">
+                                <div className={`p-2.5 rounded-lg ${item.bg} ${item.color} w-fit mb-4`}>
+                                    <item.icon size={24} />
+                                </div>
+                                <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
+                                <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
+                <div ref={archHeader.ref as any} {...archHeader.props} className="nyte-reveal nyte-reveal-up flex flex-col items-center mb-16">
+                    <h2 className="text-3xl font-bold text-white text-center">Built on a foundation of giants</h2>
+                    <p className="text-slate-400 mt-4 text-center">We stand on the shoulders of the best tools in the ecosystem.</p>
+                </div>
+
+                <div ref={archGrid.ref as any} {...archGrid.props} className="nyte-reveal nyte-reveal-up grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="group relative p-1 rounded-xl bg-gradient-to-b from-white/10 to-white/5 hover:to-yellow-500/20 transition-all duration-500 nyte-tilt nyte-sheen" >
+                        <div className="relative h-full bg-[#080c14] rounded-[10px] p-8 overflow-hidden border border-white/5">
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="p-3 bg-yellow-500/10 rounded-lg text-yellow-400">
+                                        <Zap size={24} />
+                                    </div>
+                                    <span className="text-xs font-mono text-slate-500">v7.3.1</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">Powered by Vite</h3>
+                                <p className="text-sm text-slate-400 mb-6">Lightning fast HMR and optimized builds using Rollup. The best DX in class.</p>
+
+                                <div className="bg-black/40 rounded-lg p-3 border border-white/5 font-mono text-xs text-slate-300">
+                                    <div className="flex justify-between text-slate-500 mb-2">
+                                        <span>builder.ts</span>
+                                        <span className="text-yellow-400">Node API</span>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <div className="flex gap-2"><span className="text-purple-400">import</span> {'{'} build {'}'} <span className="text-purple-400">from</span> <span className="text-green-400">'vite'</span></div>
+                                        <div className="flex gap-2"><span className="text-purple-400">await</span> build({'{'}</div>
+                                        <div className="pl-4 text-slate-400">root: <span className="text-green-400">'./src'</span>,</div>
+                                        <div className="flex gap-2">{'}'})</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="group relative p-1 rounded-xl bg-gradient-to-b from-white/10 to-white/5 hover:to-cyan-500/20 transition-all duration-500 nyte-tilt nyte-sheen" >
+                        <div className="relative h-full bg-[#080c14] rounded-[10px] p-8 overflow-hidden border border-white/5">
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="p-3 bg-cyan-500/10 rounded-lg text-cyan-400">
+                                        <Box size={24} />
+                                    </div>
+                                    <span className="text-xs font-mono text-slate-500">React 19</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">React Client Components</h3>
+                                <p className="text-sm text-slate-400 mb-6">Built for the future of React. Instant interactions, client-side rendering, and seamless Suspense.</p>
+
+                                <div className="bg-black/40 rounded-lg p-3 border border-white/5 font-mono text-xs text-slate-300">
+                                    <div className="flex justify-between text-slate-500 mb-2">
+                                        <span>counter.tsx</span>
+                                        <span className="text-cyan-400">Client</span>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <div className="flex gap-2"><span className="text-blue-400">function</span> Counter() {'{'}</div>
+                                        <div className="pl-4 flex gap-2"><span className="text-purple-400">const</span> [v, set] = useState(0)</div>
+                                        <div className="flex gap-2">{'}'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="group relative p-1 rounded-xl bg-gradient-to-b from-white/10 to-white/5 hover:to-pink-500/20 transition-all duration-500 nyte-tilt nyte-sheen" >
+                        <div className="relative h-full bg-[#080c14] rounded-[10px] p-8 overflow-hidden border border-white/5">
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="p-3 bg-pink-500/10 rounded-lg text-pink-400">
+                                        <Palette size={24} />
+                                    </div>
+                                    <span className="text-xs font-mono text-slate-500">v4.0</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">Tailwind CSS</h3>
+                                <p className="text-sm text-slate-400 mb-6">Utility-first framework for rapid UI development. Modern design system built-in.</p>
+
+                                <div className="bg-black/40 rounded-lg p-3 border border-white/5 font-mono text-xs text-slate-300">
+                                    <div className="flex justify-between text-slate-500 mb-2">
+                                        <span>styles.css</span>
+                                        <span className="text-pink-400">Zero Runtime</span>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <div className="flex gap-2"><span className="text-purple-400">@theme</span> {'{'}</div>
+                                        <div className="pl-4 text-slate-400">--color-primary: <span className="text-pink-400">#ec4899</span>;</div>
+                                        <div className="flex gap-2">{'}'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer className="relative z-10 py-12 border-t border-white/5 px-6 bg-[#030712]">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">Nyte.js</span>
+                    </div>
+                    <div className="text-slate-500 text-sm">
+                        © Nyte.js {new Date().getFullYear()}  All rights reserved.
+                    </div>
+                    <div className="flex gap-6">
+                        <a href="https://github.com/murillo-frazao-cunha/nyte" className="flex items-center gap-2" target="_blank" rel="noreferrer">
+                            <Github className="text-slate-500 hover:text-white cursor-pointer transition-colors" size={20} />
+                        </a>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
-}
+};
 
+export default NyteLanding;

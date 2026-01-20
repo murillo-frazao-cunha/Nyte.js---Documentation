@@ -11,7 +11,7 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "moduleResolution": "nodenext",
-    "types": ["nyte/global", "node"]
+    "types": ["nyte/global"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

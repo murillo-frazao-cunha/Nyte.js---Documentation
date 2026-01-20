@@ -2,6 +2,8 @@
 
 :root {
     --cyan-glow: rgba(34, 211, 238, 0.15);
+    --reveal-duration: 900ms;
+    --reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
@@ -167,5 +169,145 @@ body {
 @media (max-width: 768px) {
     .next-steps {
         grid-template-columns: 1fr; /* Uma coluna só */
+    }
+}
+
+/* --- Landing / Motion Utilities --- */
+@keyframes nyte-float {
+    0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.65; }
+    50% { transform: translate3d(0, -10px, 0); opacity: 1; }
+}
+
+@keyframes nyte-shimmer {
+    0% { transform: translateX(-60%) skewX(-12deg); opacity: 0; }
+    15% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { transform: translateX(120%) skewX(-12deg); opacity: 0; }
+}
+
+@keyframes nyte-orbit {
+    0% { transform: rotate(0deg) translateX(10px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+}
+
+@keyframes nyte-reveal-up {
+    from { opacity: 0; transform: translate3d(0, 24px, 0) scale(0.98); filter: blur(6px); }
+    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0px); }
+}
+
+@keyframes nyte-reveal-down {
+    from { opacity: 0; transform: translate3d(0, -18px, 0) scale(0.985); filter: blur(6px); }
+    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0px); }
+}
+
+@keyframes nyte-reveal-fade {
+    from { opacity: 0; filter: blur(8px); }
+    to { opacity: 1; filter: blur(0px); }
+}
+
+/* Base: hidden until visible */
+[data-reveal-visible="false"] {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.99);
+    filter: blur(8px);
+}
+
+/* Visible (default) */
+[data-reveal-visible="true"],
+:not([data-reveal-visible]) {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0px);
+}
+
+/* Variants (opt-in by class) */
+.nyte-reveal {
+    will-change: transform, opacity, filter;
+    transition: opacity var(--reveal-duration) var(--reveal-ease),
+    transform var(--reveal-duration) var(--reveal-ease),
+    filter var(--reveal-duration) var(--reveal-ease);
+}
+
+.nyte-reveal.nyte-reveal-up[data-reveal-visible="true"] {
+    animation: nyte-reveal-up var(--reveal-duration) var(--reveal-ease) both;
+}
+
+.nyte-reveal.nyte-reveal-down[data-reveal-visible="true"] {
+    animation: nyte-reveal-down var(--reveal-duration) var(--reveal-ease) both;
+}
+
+.nyte-reveal.nyte-reveal-fade[data-reveal-visible="true"] {
+    animation: nyte-reveal-fade 700ms var(--reveal-ease) both;
+}
+
+/* Stagger helper (set --d inline) */
+.nyte-stagger {
+    animation-delay: var(--d, 0ms);
+}
+
+/* Hover tilt/glow */
+.nyte-tilt {
+    transform-style: preserve-3d;
+    transition: transform 450ms var(--reveal-ease), box-shadow 450ms var(--reveal-ease);
+}
+
+.nyte-tilt:hover {
+    transform: perspective(900px) rotateX(6deg) rotateY(-8deg) translateY(-4px);
+    box-shadow: 0 25px 90px -35px rgba(34, 211, 238, 0.25);
+}
+
+/* Glass sheen for cards */
+.nyte-sheen {
+    position: relative;
+    overflow: hidden;
+}
+
+.nyte-sheen::after {
+    content: "";
+    position: absolute;
+    inset: -40% -60%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
+    transform: translateX(-60%) skewX(-12deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nyte-sheen:hover::after {
+    animation: nyte-shimmer 1.6s var(--reveal-ease);
+}
+
+/* Background particles */
+.nyte-particle {
+    animation-name: nyte-float;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+/* Prefer reduced motion: keep layout, drop heavy motion */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --reveal-duration: 1ms;
+    }
+
+    .nyte-particle,
+    .animate-pulse {
+        animation: none !important;
+    }
+
+    .nyte-tilt,
+    .nyte-sheen::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .nyte-reveal {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    [data-reveal-visible="false"] {
+        opacity: 1;
+        transform: none;
+        filter: none;
     }
 }

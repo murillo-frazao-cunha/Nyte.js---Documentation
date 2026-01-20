@@ -25,9 +25,8 @@ The fastest way to start a new Nyte.js project is by using the official basic ex
 > - Start the development server locally
 
 ```bash
-npx degit murillo-frazao-cunha/nyte/examples/basic-app my-project
+npx @nytejs/create-app@latest my-project
 cd my-project
-npm install
 npm run dev
 ```
 
