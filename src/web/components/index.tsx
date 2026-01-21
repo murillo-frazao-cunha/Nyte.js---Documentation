@@ -299,11 +299,11 @@ const NyteLanding = () => {
                         },
                         {
                             icon: Zap,
-                            title: "Powered by Vite",
-                            desc: "Lightning fast HMR and heavily optimized production builds.",
-                            color: "text-yellow-400",
-                            bg: "bg-yellow-500/10",
-                            border: "hover:border-yellow-500/30"
+                            title: "Powered by Rollup",
+                            desc: "Designed for fast builds and maximum production performance.",
+                            color: "text-orange-400",
+                            bg: "bg-orange-500/10",
+                            border: "hover:border-orange-500/30"
                         },
                         {
                             icon: Wifi,
@@ -341,10 +341,10 @@ const NyteLanding = () => {
                                     <div className="p-3 bg-yellow-500/10 rounded-lg text-yellow-400">
                                         <Zap size={24} />
                                     </div>
-                                    <span className="text-xs font-mono text-slate-500">v7.3.1</span>
+                                    <span className="text-xs font-mono text-slate-500">@latest</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-2">Powered by Vite</h3>
-                                <p className="text-sm text-slate-400 mb-6">Lightning fast HMR and optimized builds using Rollup. The best DX in class.</p>
+                                <h3 className="text-xl font-bold text-white mb-2">Powered by Rollup</h3>
+                                <p className="text-sm text-slate-400 mb-6">Designed for fast builds and maximum production performance</p>
 
                                 <div className="bg-black/40 rounded-lg p-3 border border-white/5 font-mono text-xs text-slate-300">
                                     <div className="flex justify-between text-slate-500 mb-2">
@@ -352,7 +352,7 @@ const NyteLanding = () => {
                                         <span className="text-yellow-400">Node API</span>
                                     </div>
                                     <div className="space-y-1">
-                                        <div className="flex gap-2"><span className="text-purple-400">import</span> {'{'} build {'}'} <span className="text-purple-400">from</span> <span className="text-green-400">'vite'</span></div>
+                                        <div className="flex gap-2"><span className="text-purple-400">import</span> {'{'} build {'}'} <span className="text-purple-400">from</span> <span className="text-green-400">'rollup'</span></div>
                                         <div className="flex gap-2"><span className="text-purple-400">await</span> build({'{'}</div>
                                         <div className="pl-4 text-slate-400">root: <span className="text-green-400">'./src'</span>,</div>
                                         <div className="flex gap-2">{'}'})</div>
