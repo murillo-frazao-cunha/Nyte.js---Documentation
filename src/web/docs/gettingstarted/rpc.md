@@ -34,6 +34,27 @@ you write **normal backend functions**, expose them intentionally, and consume t
 
 ---
 
+## Data model: what you can return (and what you can’t)
+
+RPC calls cross the server ↔ client boundary, so inputs and return values must be **serializable**.
+
+That means you should return **JSON-friendly data** (or “JSON-like” structures), for example:
+
+- primitives (`string`, `number`, `boolean`, `null`)
+- plain objects and arrays
+- data-transfer objects (DTOs)
+
+And you should **not** return things that are tied to the server runtime or that can’t be serialized, for example:
+
+- database connections/clients (Prisma client, Mongo client, knex instance, etc.)
+- class instances that rely on methods/prototypes
+- functions, streams, sockets, request/response objects, etc.
+
+> Tip: keep RPC functions focused on **returning data**, not returning infrastructure.
+> If you need DB access, do it inside the server function and return the result data.
+
+---
+
 ## Backend: exposing functions
 
 Place your RPC functions inside a backend file
@@ -69,17 +90,19 @@ function getOSName() {
     }
 }
 
-// You can optionally receive the request as a second argument.
-// This gives you access to IP, headers, auth info, etc.
+// You can optionally receive the request as the **first** argument.
+// - It's optional: you can omit it completely if you don't need request context.
+// - If you include it, it must come first.
+// - On the frontend, this parameter does NOT exist (the client never passes `_req`).
 export async function getServerDiagnostics(
-    input: DiagnosticsInput,
-    _req?: NyteRequest
+    _req: NyteRequest,
+    input: DiagnosticsInput
 ): Promise<DiagnosticsResult> {
     return {
         hostname: os.hostname(),
         platform: getOSName(),
         message: input.message,
-        ip: _req?.ip
+        ip: _req.ip
     };
 }
 
@@ -97,7 +120,8 @@ Expose(getServerDiagnostics, getPackageVersion);
 * Functions are **normal TypeScript functions**
 * `Expose()` is **explicit and intentional**
 * No routes, controllers, or HTTP handlers
-* Optional `NyteRequest` gives access to request context
+* `NyteRequest` is optional, and when used it must be the **first** parameter
+* On the frontend, `_req` is never part of the call signature
 * If it’s not passed to `Expose()`, it **cannot be called**
 
 ---
@@ -109,17 +133,21 @@ On the frontend, use `importServer()` to load the exposed functions.
 ```tsx
 import { importServer } from "nyte/react";
 
-const {
-    getServerDiagnostics,
-    getPackageVersion
-} = importServer("../../backend/helper");
+// Typed import: gives you full intellisense + compile-time safety
+const api = importServer<typeof import("../../backend/helper")>(
+    "../../backend/helper"
+);
+
+const { getServerDiagnostics, getPackageVersion } = api;
 
 export default function Example() {
     async function run() {
         // All RPC calls are async on the client
         const version = await getPackageVersion();
 
-        const diagnostics = await getServerDiagnostics("Hello from the client");
+        const diagnostics = await getServerDiagnostics({
+            message: "Hello from the client"
+        });
 
         console.log({ version, diagnostics });
     }
@@ -131,7 +159,7 @@ export default function Example() {
 ### Key points (frontend)
 
 * Imported functions behave like normal async functions
-* Types are inferred automatically from the backend
+* With the typed `importServer<typeof import("...")>("...")` pattern, the frontend automatically inherits the backend function types (params + return)
 * No fetch, no axios, no manual API contracts
 * Serialization and transport are handled internally by Nyte
 
